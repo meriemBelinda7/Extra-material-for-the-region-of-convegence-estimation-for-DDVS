@@ -1,0 +1,57 @@
+\section{Expression of the cost function}
+\subsection{Expression of the Desired Image}
+Assuming a fronto-parallel scene made of a Single 3D bright point at the desired position $\textbf{X}^{*} = \begin{bmatrix}
+    X^{*}&Y^{*}&Z^{*}
+\end{bmatrix}^{T}\in \mathbb{R}^{3}$ in the camera frame. On a dark textureless background, based on \cite{caron_defocus_based_2021}, the desired image is then given by \eqref{desired_image_eq}.
+\begin{equation}
+    I_{d}(\textbf{u},\textbf{X}^{*})=\frac{I_{1}}{2\pi\lambda(Z^{*})^{2}} e^{\left(-\frac{||\textbf{u}-pr(\textbf{X}^{*})||^{2}}{2\lambda(Z^{*})^{2}}\right)}
+    \label{desired_image_eq}
+\end{equation}
+Where :
+\begin{itemize}
+    \item D : aperture diameter
+    \item f : focal length
+    \item $k_{u}$ : physical size of a pixel
+    \item $Z_{f}$ : focus depth
+    \item $pr(\textbf{X}^{*})$ is the projection of $\textbf{X}^{*}$ on the circle of confusion and it is given by \eqref{prx}
+    \begin{equation}
+        pr(\textbf{X}^{*}) = \begin{bmatrix}
+    \frac{f}{k_{u}} & 0 & u_{0} \\
+    0 & \frac{f}{k_{u}} & v_{0} \\
+    0 & 0 & 1
+\end{bmatrix}\begin{bmatrix}
+    \frac{X^{*}}{Z^{*}}\\
+    \frac{Y^{*}}{Z^{*}}\\
+    1
+\end{bmatrix}
+\label{prx}
+\end{equation}
+\item $\lambda(Z)$ is given by \eqref{lambda}
+\begin{equation}
+    \lambda (Z) = \frac{Df}{6K_{u}(Z_{f}-f)}\left(1 - \frac{Z_{f}}{Z}\right)
+    \label{lambda}
+\end{equation}
+\end{itemize}
+
+\subsection{Expression of the Current Image}
+Applying a translational error on $\textbf{X}^{*}$ the current position is given by $\textbf{X} = \begin{bmatrix}
+    X^{*} + tx & Y^{*} + ty & Z^{*} + tz
+\end{bmatrix}^{T} \in \mathbb{R}^{3}$. $\textbf{X}$ can be written as $\textbf{X} = \textbf{X}^{*} + \textbf{t}$ where $\textbf{t} = \begin{bmatrix}
+    tx & ty & tz
+\end{bmatrix}^{T}\in \mathbb{R}^{3}$ The current image is then given by \eqref{current image}.
+\begin{equation}
+    I_{d}(\textbf{u},\textbf{X})=\frac{I_{1}}{2\pi\lambda(Z^{*}+tz)^{2}} e^{\left(-\frac{||\textbf{u}-pr(\textbf{X})||^{2}}{2\lambda(Z^{*}+tz)^{2}}\right)}
+    \label{current image}
+\end{equation}
+
+\subsection{Expression of the Cost Function}
+Assuming an infinite camera I.e : $\begin{bmatrix} u & v \end{bmatrix} \in \mathbb{R}^{2}$, the cost function can be estimated by \eqref{cost_eq}.
+\begin{equation}
+    C(\textbf{t}) = \int_{v\in\mathbb{R}}\int_{u\in\mathbb{R}} \frac{1}{2}\left[Id\left(\textbf{u,X}^{*}+\textbf{t}\right) - Id\left(\textbf{u,X}^{*}\right)\right]^{2} du dv
+    \label{cost_eq}
+\end{equation}
+Replacing the current and desired images by \eqref{current image} and \eqref{desired_image_eq}, and using wxmaxima to evaluate the integral the cost function is then given by \eqref{cost_fct_cont}
+\begin{equation}
+    C(\textbf{t}) = \frac{I_{1}^{2}}{8\pi}\left(\frac{1}{\lambda(Z^{*})^{2}}+\frac{1}{\lambda(Z^{*}+tz)^{2}}\right) -\frac{I_{1}^{2}}{2\pi(\lambda(Z^{*})^{2}+\lambda(Z^{*}+tz)^2)}e^{-\frac{f^{2}\left((X^{*}tz-Z^{*}tx)^{2}+(Y^{*}tz-Z^{*}ty)^{2}\right)}{2(K_{u}Z^{*}(Z^{*}+tz))^{2}(\lambda(Z^{*}+tz)^{2}+\lambda(Z^{*})^{2})}}
+    \label{cost_fct_cont}
+\end{equation}
